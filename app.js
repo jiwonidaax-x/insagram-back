@@ -1,5 +1,6 @@
 // app.js
-// 아래에 코드를 작성해 주세요.
+
+//Users data
 const users = [
   {
     id: 1,
@@ -15,6 +16,7 @@ const users = [
   },
 ];
 
+//posts Data
 const posts = [
   {
     id: 1,
@@ -30,15 +32,48 @@ const posts = [
   },
 ];
 
+//edit post
+const editPost = (req, res) => {
+  const data = [];
+  const newPost = req.body;
+  console.log(newPost);
+  posts.forEach((e) => {
+    if (e.id === newPost.id) {
+      e.title = newPost.title;
+      e.content = newPost.content;
+      e.userId = newPost.userId;
+    }
+  });
+
+  for (let i = 0; i < users.length; i++) {
+    if (users[i].id === newPost.userId) {
+      data.push({
+        userID: newPost.userId,
+        userName: users[i].name,
+        postingId: newPost.id,
+        postingTitle: newPost.title,
+        postingContent: newPost.content,
+      });
+    }
+  }
+  console.log(res.statusCode);
+  //res.send(data);
+  res.status(200).json(data);
+};
+
+//deleteData
+const deleteData = (req, res) => {
+  posts.length = 0;
+  console.log(posts);
+  res.status(200).json({ message: "postingDeleted" });
+
+}
+
 //queryData
 const returnData = (req, res) => {
   const data = [];
-  //유저랑 포스트 맞춰서 data에 푸쉬
-  //if(users[i].id===posts[j].userID)=>for뤂 두번 돌아서 다 매칭 시키기
   for (let i = 0; i < users.length; i++) {
     for (let j = 0; j < posts.length; j++) {
-      console.log(users[i].id);
-      console.log(posts[j].userId);
       if (users[i].id === posts[j].userId) {
         data.push({
           userID: users[i].id,
@@ -50,16 +85,14 @@ const returnData = (req, res) => {
       }
     }
   }
-  res.json({ statusCode: res.statusCode });
-  console.log(JSON.stringify(data, null, 2));
+
+  console.log(res.statusCode);
+  res.status(200).send(data);
 };
 
 //createUser
 const createUser = (req, res) => {
   const user = req.body;
-
-  console.log(user);
-
   users.push({
     id: users.length + 1,
     name: user.name,
@@ -67,17 +100,13 @@ const createUser = (req, res) => {
     password: user.password,
   });
 
-  users.forEach((e) => {
-    console.log(e);
-  });
-
-  res.json({ message: "userCreated" });
+  console.log(JSON.stringify(users, null, 2));
+  res.status(200).json({ message: "userCreated" });
 };
 
 //createPost
 const createPost = (req, res) => {
   const post = req.body;
-
   posts.push({
     id: posts.length + 1,
     title: post.title,
@@ -85,12 +114,8 @@ const createPost = (req, res) => {
     userId: post.userId,
   });
 
-  //for check
-  posts.forEach((e) => {
-    console.log(e);
-  });
-
-  res.json({ message: "postCreated" });
+  console.log(JSON.stringify(posts, null, 2));
+  res.status(200).json({ message: "postCreated" });
 };
 
-module.exports = { createUser, createPost, returnData };
+module.exports = { createUser, createPost, returnData, editPost, deleteData };
